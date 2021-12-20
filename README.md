@@ -2,7 +2,7 @@
 # This is done with Kaggle's notbook assistance. 
 
 1. Get Data
-I get the the data from Kaggle
+I got the the data from Kaggle, I coudn't uplaod it though because of the file size. 
 https://www.kaggle.com/ananthu017/emotion-detection-fer
 The dataset has 7 folders for training (happiness, neutral, sadness, anger, surprise, disgust, fear) and 7 folders for testing (happiness, neutral, sadness, anger, surprise, disgust, fear).
 It has 5,685 examples of 48x48 pixel gray scale images.
