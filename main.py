@@ -4,10 +4,13 @@ import numpy as np
 
 import tensorflow as tf
 
+from IPython.display import clear_output
+
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.utils import to_categorical
 
 from sklearn.metrics import roc_auc_score
+
 # %%
 train_dir = "archive/train"
 test_dir = "archive/test"
@@ -32,7 +35,7 @@ train_g= train_d.flow_from_directory(directory = train_dir,
                                                     color_mode = "rgb",
                                                     class_mode = "categorical",
                                                     subset = "training",
-                                                    seed = 12)
+                                                    seed = 9)
 
 validation_g= test_d.flow_from_directory(directory = train_dir,
                                                          target_size = (48 ,48),
@@ -41,7 +44,7 @@ validation_g= test_d.flow_from_directory(directory = train_dir,
                                                          color_mode = "rgb",
                                                          class_mode = "categorical",
                                                          subset = "validation",
-                                                         seed = 12
+                                                         seed = 9
                                                         )
 
 test_g= test_d.flow_from_directory(directory = test_dir,
@@ -50,49 +53,32 @@ test_g= test_d.flow_from_directory(directory = test_dir,
                                                     shuffle  = False , 
                                                     color_mode = "rgb",
                                                     class_mode = "categorical",
-                                                    seed = 12)
+                                                    seed = 9)
 
-#%%
-def feature_extractor(inputs):
-    feature_extractor = tf.keras.applications.DenseNet169(input_shape=(48,48, 3),
+
+#%%    
+inputs = tf.keras.layers.Input(shape=(48 ,48,3))
+feature = tf.keras.applications.DenseNet169(input_shape=(48,48, 3),
                                                include_top=False,
                                                weights="imagenet")(inputs)
-    
-    return feature_extractor
 
-def classifier(inputs):
-    x = tf.keras.layers.GlobalAveragePooling2D()(inputs)
-    x = tf.keras.layers.Dense(256, activation="relu", kernel_regularizer = tf.keras.regularizers.l2(0.01))(x)
-    x = tf.keras.layers.Dropout(0.3)(x)
-    x = tf.keras.layers.Dense(1024, activation="relu", kernel_regularizer = tf.keras.regularizers.l2(0.01))(x)
-    x = tf.keras.layers.Dropout(0.5)(x)
-    x = tf.keras.layers.Dense(512, activation="relu", kernel_regularizer = tf.keras.regularizers.l2(0.01))(x)
-    x = tf.keras.layers.Dropout(0.5) (x)
-    x = tf.keras.layers.Dense(7, activation="softmax", name="classification")(x)
-    
-    return x
+classification_output = tf.keras.layers.GlobalAveragePooling2D()(feature)
+classification_output = tf.keras.layers.Dense(256, activation="relu", kernel_regularizer = tf.keras.regularizers.l2(0.01))(classification_output)
+classification_output = tf.keras.layers.Dropout(0.3)(classification_output)
+classification_output = tf.keras.layers.Dense(1024, activation="relu", kernel_regularizer = tf.keras.regularizers.l2(0.01))(classification_output)
+classification_output = tf.keras.layers.Dropout(0.5)(classification_output)
+classification_output = tf.keras.layers.Dense(512, activation="relu", kernel_regularizer = tf.keras.regularizers.l2(0.01))(classification_output)
+classification_output = tf.keras.layers.Dropout(0.5) (classification_output)
+classification_output = tf.keras.layers.Dense(7, activation="softmax", name="classification")(classification_output)
 
-def final_model(inputs):
-    densenet_feature_extractor = feature_extractor(inputs)
-    classification_output = classifier(densenet_feature_extractor)
-    
-    return classification_output
-
-def define_model():
-    
-    inputs = tf.keras.layers.Input(shape=(48 ,48,3))
-    classification_output = final_model(inputs) 
-    model = tf.keras.Model(inputs=inputs, outputs = classification_output)
+model = tf.keras.Model(inputs=inputs, outputs = classification_output)
      
-    model.compile(optimizer=tf.keras.optimizers.SGD(0.1), 
+model.compile(optimizer=tf.keras.optimizers.SGD(0.1), 
                 loss='categorical_crossentropy',
                 metrics = ['accuracy'])
   
-    return model
-#%%
-from IPython.display import clear_output
-# %%
-model = define_model()
+
+
 clear_output()
 
 # Feezing the feature extraction layers
@@ -107,7 +93,7 @@ earlyStoppingCallback = tf.keras.callbacks.EarlyStopping(monitor='val_loss',
                                                         )
 
 history = model.fit(x = train_g,
-                    epochs = 30,
+                    epochs = 20,
                     validation_data = validation_g, 
                     callbacks= [earlyStoppingCallback])
 
@@ -120,14 +106,13 @@ model.compile(optimizer=tf.keras.optimizers.SGD(0.001), #lower learning rate
                 loss='categorical_crossentropy',
                 metrics = ['accuracy'])
 
-history_ = model.fit(x = train_g,epochs = 20 ,validation_data = validation_g)
+history_ = model.fit(x = train_g,epochs = 15 ,validation_data = validation_g)
 history = history.append(pd.DataFrame(history_.history) , ignore_index=True)
 
 
 #%%
 model.evaluate(test_g)
 preds = model.predict(test_g)
-y_preds = np.argmax(preds , axis = 1 )
 y_test = np.array(test_g.labels)
 #%%
 print("ROC-AUC Score  = " ,roc_auc_score(to_categorical(y_test) , preds))
