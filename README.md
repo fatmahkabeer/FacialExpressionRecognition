@@ -17,4 +17,4 @@ It has 5,685 examples of 48x48 pixel gray scale images.
 • SGD was used for optimizers categorical_crossentropy as a loss function
 
 4. Test Model
-The model gives an accuracy of 0.8910888723078322
+The model gives an accuracy of 0.8751
