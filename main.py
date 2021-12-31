@@ -11,10 +11,26 @@ from tensorflow.keras.utils import to_categorical
 
 from sklearn.metrics import roc_auc_score
 
+import matplotlib as plt
+
+
 # %%
 train_dir = "archive/train"
 test_dir = "archive/test"
 
+#%%
+import os
+#number of categories. 
+len(os.listdir(train_dir))
+#%%
+# target distrubuation. 
+print('number of angry images: ' + str(len(os.listdir('archive/test/angry'))))
+print('number of disgusted images: ' + str(len(os.listdir('archive/test/disgusted'))))
+print('number of fearful images: ' + str(len(os.listdir('archive/test/fearful'))))
+print('number of happy images: ' + str(len(os.listdir('archive/test/happy'))))
+print('number of neutral images: ' + str(len(os.listdir('archive/test/neutral'))))
+print('number of sad images: ' + str(len(os.listdir('archive/test/sad'))))
+print('number of surprised images: ' + str(len(os.listdir('archive/test/surprised'))))
 
 #%%
 train_d= ImageDataGenerator(horizontal_flip=True,
