@@ -1,4 +1,7 @@
 #%%
+# - I have mentioned earlier that I use Kaggle to complete the project, so that why I do not think it was a plagiarism. 
+# - I could not upload the dataset because if its size
+#%%
 import pandas as pd
 import numpy as np
 
@@ -79,11 +82,13 @@ feature = tf.keras.applications.DenseNet169(input_shape=(48,48, 3),
                                                weights="imagenet")(inputs)
 
 classification_output = tf.keras.layers.GlobalAveragePooling2D()(feature)
-classification_output = tf.keras.layers.Dense(256, activation="relu", kernel_regularizer = tf.keras.regularizers.l2(0.01))(classification_output)
+classification_output = tf.keras.layers.Dense(250, activation="relu", kernel_regularizer = tf.keras.regularizers.l2(0.01))(classification_output)
 classification_output = tf.keras.layers.Dropout(0.3)(classification_output)
 classification_output = tf.keras.layers.Dense(1024, activation="relu", kernel_regularizer = tf.keras.regularizers.l2(0.01))(classification_output)
 classification_output = tf.keras.layers.Dropout(0.5)(classification_output)
 classification_output = tf.keras.layers.Dense(512, activation="relu", kernel_regularizer = tf.keras.regularizers.l2(0.01))(classification_output)
+classification_output = tf.keras.layers.Dropout(0.5) (classification_output)
+classification_output = tf.keras.layers.Dense(250, activation="relu", kernel_regularizer = tf.keras.regularizers.l2(0.01))(classification_output)
 classification_output = tf.keras.layers.Dropout(0.5) (classification_output)
 classification_output = tf.keras.layers.Dense(7, activation="softmax", name="classification")(classification_output)
 
@@ -114,7 +119,7 @@ history = model.fit(x = train_g,
                     callbacks= [earlyStoppingCallback])
 
 history = pd.DataFrame(history.history)
-# %%
+
 # Un-Freezing the feature extraction layers for fine tuning 
 model.layers[1].trainable = True
 
