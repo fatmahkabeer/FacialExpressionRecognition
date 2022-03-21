@@ -1,5 +1,5 @@
 # FacialExpressionRecognition
-# This is done with Kaggle's notbook assistance. 
+ 
 
 1. Get Data
 I got the the data from Kaggle, I coudn't uplaod it though because of the file size. 
@@ -18,3 +18,4 @@ It has 5,685 examples of 48x48 pixel gray scale images.
 
 4. Test Model
 The model gives an accuracy of 0.88
+*This is done with Kaggle's notbook assistance.
