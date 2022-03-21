@@ -18,4 +18,5 @@ It has 5,685 examples of 48x48 pixel gray scale images.
 
 4. Test Model
 The model gives an accuracy of 0.88
+
 *This is done with Kaggle's notbook assistance.
